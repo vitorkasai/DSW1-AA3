@@ -6,7 +6,6 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 
 import br.ufscar.dc.dsw.domain.Locadora;
-import br.ufscar.dc.dsw.domain.Usuario;
 
 @SuppressWarnings("uncheked")
 public interface ILocadoraDAO extends CrudRepository<Locadora, Long> { 
@@ -18,4 +17,8 @@ public interface ILocadoraDAO extends CrudRepository<Locadora, Long> {
 
     @Query("SELECT l FROM Locadora l WHERE l.username = :username")
     public Locadora getUserByUsername(@Param("username") String username);
+    /* 
+    @Query("select * from Locadora where cidade = :cidade")
+	public List<Locadora> buscarPorCidade(@Param("cidade") String cidade);*/
+
 }

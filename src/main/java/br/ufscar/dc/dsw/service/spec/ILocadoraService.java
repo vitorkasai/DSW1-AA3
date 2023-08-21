@@ -8,4 +8,6 @@ public interface ILocadoraService {
     void salvar(Locadora locadora);
     void excluir(Long id);
     //boolean LocadoraTemLocacao(Long id);
+    
+    //List <Locadora> buscarPorCidade(String cidade);
 }
