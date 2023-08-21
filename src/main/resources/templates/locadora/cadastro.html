@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity"
+    >
+<head>
+<title th:text="${locadora.id == null} ? #{cadastro.locadora.cadastrar.titulo} : #{cadastro.locadora.editar.titulo}"></title>
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"> </script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/5.0.6/jquery.inputmask.min.js"></script>
+
+<link rel="stylesheet" href="/css/cadastroLocadora.css" type="text/css">
+
+</head>
+
+<body>
+    <section>
+        <h1 th:text="${locadora.id == null} ? #{cadastro.locadora.cadastrar.titulo} : #{cadastro.locadora.editar.titulo}"></h1>
+        
+        <div id="cadastro">
+            <form th:action="${locadora.id == null} ? @{/locadoras/salvar} : @{/locadoras/editar}" id="formLocadora" th:object="${locadora}"
+                method="POST">
+                <div>
+                    <div>
+                        <label for="username" th:text="#{cadastro.locadora.email}"></label>
+                        <input type="email" id="username" th:placeholder="#{cadastro.locadora.email}"
+                            autofocus="autofocus" th:field="*{username}" required />
+                        <div>
+                            <span th:errors="*{username}"></span>
+                        </div>
+                    </div>
+                    <div>
+                        <label for="password" th:text="#{cadastro.locadora.senha}"></label>
+                        <input type="text" id="password" th:placeholder="#{cadastro.locadora.senha}"
+                            autofocus="autofocus" th:field="*{password}" th:readonly="${locadora.id != null}" style="background-color: lightgray;" required />
+                        <div>
+                            <span th:errors="*{password}"></span>
+                        </div>
+                    </div>
+                    <div>
+                        <label for="CNPJ" th:text="#{cadastro.locadora.cnpj}"></label>
+                        <input type="text" id="CNPJ" th:field="*{CNPJ}" autofocus="autofocus" placeholder="__.___.___/____-__"
+                        data-inputmask="'mask': '99.999.999/9999-99', 'removeMaskOnSubmit': true" th:readonly="${locadora.id != null}"
+                        th:classappend="${#fields.hasErrors('CNPJ')} ? is-invalid" style="background-color: lightgray;" required />
+
+                        <div class="invalid-feedback">
+							<span th:errors="*{CNPJ}"></span>
+						</div>
+                    </div>
+                    <div>
+                        <label for="nome" th:text="#{cadastro.locadora.nomeLocadora}"></label>
+                        <input type="text" id="nome" th:field="*{nome}" th:placeholder="#{cadastro.locadora.nomeLocadora}"
+                            autofocus="autofocus" required />
+                        <div>
+                            <span th:errors="*{nome}"></span>
+                        </div>
+                    </div>
+                    <div>
+                        <input th:if="${locadora.id != null}" type="hidden" id="cidadeLocadoraEditada" th:value="${locadora.cidade}">
+
+                        <label for="selectCidade" th:text="#{cadastro.locadora.cidade}"></label>
+                        <select th:field="*{cidade}" id="selectCidade" required>
+                            <option th:if="${locadora.id == null}"th:value="cidadeInvalida" th:text="#{cadastro.locadora.selecionarCidade}" selected id="cidadeInvalida" style="background-color: lightgray;"></option>
+                            
+                        </select>
+                        <div>
+                            <span th:errors="*{cidade}"></span>
+                        </div>
+                    </div>
+                    <input type="hidden" th:field="*{role}">
+                    <input type="hidden" id="id" th:field="*{id}" />
+                    
+                </div>
+                <button type="submit" id="btnSubmit" th:text="#{cadastro.locadora.salvar}"></button>
+            </form>
+        </div>
+        
+    </section>
+
+    <script>
+         // Aplicar máscara de CNPJ
+         $(document).ready(function () {
+            $("#CNPJ").inputmask("99.999.999/9999-99", { "removeMaskOnSubmit": true });
+        });
+        document.addEventListener('DOMContentLoaded', function () {
+            var cidadeSelect = document.getElementById('selectCidade');
+            var cidadeHiddenInput = document.getElementById('cidadeLocadoraEditada'); // Substitua pelo ID correto do input hidden
+            var xhr = new XMLHttpRequest();
+           
+            xhr.open('GET', '/locadoras/cidades', true); // Mapeie essa URL no seu controlador para retornar o conteúdo do arquivo de cidades
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    var cidades = xhr.responseText.split('\n');
+                    for (var i = 0; i < cidades.length; i++) {
+                        var option = document.createElement('option');
+                        option.text = cidades[i];
+                        cidadeSelect.add(option);
+                    }
+
+                    // Verificar a cidade selecionada no input hidden e marcar como selecionada no select
+                    if (cidadeHiddenInput != null)
+                        var cidadeSelecionada = cidadeHiddenInput.value;
+                    var options = cidadeSelect.options;
+                    for (var j = 0; j < options.length; j++) {
+                        if (options[j].text === cidadeSelecionada) {
+                            options[j].selected = true;
+                            break;
+                        }
+                    }
+
+                    cidadeSelect.addEventListener('change', function() {
+                        var cidadeSelecionada = cidadeSelect.value;
+                        if (cidadeSelecionada !== 'cidadeInvalida') {
+                            var opcaoCidadeInvalida = document.getElementById('cidadeInvalida');
+                            opcaoCidadeInvalida.disabled = true;
+                        }
+                    });
+                    // Definir a opção inválida como desabilitada após o carregamento da página
+                    var opcaoCidadeInvalida = document.getElementById('cidadeInvalida');
+                    opcaoCidadeInvalida.disabled = true;
+
+                    // Adicionar evento de envio do formulário
+                    var form = document.getElementById('formLocadora');
+                    var btnSubmit = document.getElementById('btnSubmit');
+                    form.addEventListener('submit', function (event) {
+                        console.log("Entrei nessa porra");
+                        if (cidadeSelect.value === 'cidadeInvalida') {
+                            event.preventDefault(); // Cancela o envio do formulário
+                            alert('Por favor, selecione uma cidade válida!');
+                        }
+                    });
+
+                }
+            };
+            xhr.send();
+
+
+        });
+        
+    </script>
+</body>
+
+</html>

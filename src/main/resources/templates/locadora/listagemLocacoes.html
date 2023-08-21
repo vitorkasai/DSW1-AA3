@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+	
+	  xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity">
+<head>
+    <title th:text="#{locacao.titulo.pagina}"></title>
+	<link rel="stylesheet" href="/css/locacoesLocadoraListagem.css" type="text/css">
+</head>
+<body>
+    <h1 th:text="#{locacao.titulo.pagina}"></h1>
+    <div>
+        <table class="table table-striped table-hover table-sm">
+			<thead>
+				<tr>
+					<th th:text="#{locacao.nomeCliente}"></th>
+					<th th:text="#{locacao.emailCliente}"></th>
+                    <th th:text="#{locacao.telefoneCliente}"></th>
+                    <th th:text="#{locacao.dataLocacao}"></th>
+                    <th th:text="#{locacao.horarioLocacao}"></th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:each="locacao : ${locacoes}" >
+					<td th:text="${locacao.usuario.nome}"></td>
+					<td th:text="${locacao.usuario.username}"></td>
+                    <td th:text="${locacao.usuario.telefone}"></td>
+                    <td th:text="${locacao.dataLocacao}"></td>
+                    <td th:text="${locacao.horarioLocacao}"></td>					
+				</tr>
+			</tbody>
+		</table>
+    </div>
+</body>
+</html>

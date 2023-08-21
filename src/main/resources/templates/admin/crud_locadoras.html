@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity"
+	layout:decorate="~{fragments/layout}">
+<head>
+<title th:text="#{admin.crud.locadoras}"></title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+
+<style>
+	/* Custom CSS for the edit and delete icons */
+	/* You can adjust the padding value as needed */
+	td[colspan="2"] a {
+		padding: 8px; /* Adjust the spacing here */
+	}
+
+	/* Set the default icon color to black */
+	td[colspan="2"] a i {
+		color: black;
+	}
+
+	/* Set the icon color to red on :hover for delete */
+	td[colspan="2"] a:hover i.fa-trash-alt {
+		color: red;
+	}
+
+	/* Set the icon color to blue on :hover for edit */
+	td[colspan="2"] a:hover i.fa-edit {
+		color: blue;
+	}
+
+	.add-new-rental-btn {
+		display: inline-block;
+		padding: 10px 15px;
+		background-color: #333;
+		color: white;
+		text-decoration: none;
+		border: none;
+		border-radius: 4px;
+		margin-top: 10px;
+		margin-right: 10px;
+		margin-bottom: 15px;
+	}
+
+	.add-new-rental-btn:hover {
+		background-color: #444; /* Slightly darker shade on hover */
+		color: white;
+		text-decoration: none;
+	}
+</style>
+</head>
+<body>
+	<div layout:fragment="content" th:remove="tag">
+		<h1 th:text="#{admin.crud.locadoras}"></h1>
+		<a th:href="@{/locadoras/cadastrar}" class="add-new-rental-btn" th:text="#{locadora.crud.adicionarLocadora}"></a>
+		<div th:if="${sucess}" class="alert alert-success">
+			<span th:text="${sucess}"></span>
+		</div>
+		<table class="table table-striped table-hover table-sm">
+			<thead>
+				<tr>
+					<th>#</th>
+					<th th:text="#{locadora.crud.email}"></th>
+					<th th:text="#{locadora.crud.CNPJ}"></th>
+					<th th:text="#{locadora.crud.nome}"></th>
+					<th th:text="#{locadora.crud.cidade}"></th>
+					<th th:text="#{locadora.crud.operacoes}"></th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:each="locadora : ${locadoras}">
+					<td th:text="${locadora.id}"></td>
+					<td th:text="${locadora.username}"></td>
+					<td th:text="${locadora.CNPJ}"></td>
+					<td th:text="${locadora.nome}"></td>
+					<td th:text="${locadora.cidade}"></td>			
+					<td colspan="2">
+						<a th:href="@{/locadoras/editar/{id}(id=${locadora.id})}" role="button">
+							<i class="fas fa-edit"></i>
+						</a>
+						<a th:href="@{/locadoras/excluir/{id}(id=${locadora.id})}" role="button">
+							<i class="fas fa-trash-alt"></i>
+						</a>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+		<a class="btn btn-primary" type="button"
+				href="javascript:history.back()"><span th:text="#{previous.message}"></span></a>
+	</div>
+</body>
+</html>

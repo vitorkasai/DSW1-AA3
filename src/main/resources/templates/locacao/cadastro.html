@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity">
+<head>
+    <title th:text="#{cadastro.locacao.cadastrar.titulo}"></title>
+    <link rel="stylesheet" href="/css/cadastroLocacao.css" type="text/css">
+</head>
+
+<body>
+    <section>
+        <h1 th:text="#{cadastro.locacao.cadastrar.titulo}"></h1>
+        <div th:if="${fail}" class="alert alert-fail" th:text="#{cadastro.locacao.erro}">
+        </div>
+        <div id="cadastro">
+            <form th:action="@{/locacoes/salvar}" th:object="${locacao}" method="POST" id="formLocacao">
+                <div>
+                    <input type="hidden" id="usuario.id" th:field="*{usuario.id}" />
+                    <div>
+                        <label for="locadorasSelect" th:text="#{locadora}"></label>
+                        <select id="locadorasSelect"  th:field="${locacao.locadora}" required>
+                            
+                            <option value="locadoraVazia" id="locadoraVazia" th:text="#{cadastro.locacao.selecionarLocadora}" style="background-color: gray;" selected></option>
+                            <option th:each="locadora : ${locadoras}" th:value="${locadora.id}" th:text="${locadora.nome}"></option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="dataLocacao" th:text="#{cadastro.locacao.dataLocacao}"></label>
+                        <input type="date" id="dataLocacao" th:field="*{dataLocacao}" th:value="${#dates.format(dataLocacao, 'yyyy-MM-dd')}" autofocus="autofocus" required>
+                    </div>
+                    <div>
+                        <label for="horarioSelect" th:text="#{cadastro.locacao.horarioLocacao}"></label>
+                        <select id="horarioSelect" th:field="${locacao.horarioLocacao}" required>
+                            <option value="horarioVazio" id="horarioVazio" th:text="#{locacao.cadastro.selecionarHorario}" selected></option>
+                            <option th:each="hora : ${horariosDisponiveis}" th:value="${hora}" th:text="${hora}"></option>
+                        </select>
+                    </div> 
+                </div>
+                <input type="hidden" id="id" th:field="*{id}" />
+                <button type="submit" id="btnSubmit" th:text="#{cadastro.locacao.cadastrar}"></button>
+            </form>
+        </div>
+        
+    </section>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var opcaoLocadoraInvalida = document.getElementById('locadoraVazia');
+            opcaoLocadoraInvalida.disabled = true;
+            var selectCidade = document.getElementById('locadorasSelect');
+
+            var opcaoHorarioInvalido = document.getElementById('horarioVazio');
+            opcaoHorarioInvalido.disabled = true;
+            var selectHorario = document.getElementById('horarioSelect');
+
+
+            // Adicionar evento de envio do formulário
+            var form = document.getElementById('formLocacao');
+            var btnSubmit = document.getElementById('btnSubmit');
+            form.addEventListener('submit', function (event) {
+                if (selectCidade.value === 'locadoraVazia') {
+                    event.preventDefault(); // Cancela o envio do formulário
+                    alert('Por favor, selecione uma locadora válida!');
+                }
+
+                if (selectHorario.value === 'horarioVazio') {
+                    event.preventDefault(); // Cancela o envio do formulário
+                    alert('Por favor, selecione um horário válido!');
+                }
+            });
+
+
+            // Adicionar evento de envio do formulário
+            
+
+
+            // Obter o elemento de data
+            const dataInput = document.getElementById('dataLocacao');
+            const horariosDisponiveis = document.getElementById('horarioSelect');
+            console.log('Horarios select: ' + horariosDisponiveis);
+          
+            // Definir a data mínima do input de data
+            const today = new Date();
+            const year = today.getFullYear();
+            const month = String(today.getMonth() + 1).padStart(2, '0');
+            const day = String(today.getDate()).padStart(2, '0');
+            const minDate = `${year}-${month}-${day}`;
+
+            // Definir a data mínima do input de data
+            dataInput.min = minDate;
+            console.log("Data minima: " + dataInput.min); 
+
+             // Atualizar os valores permitidos do input de hora ao alterar a data
+        dataInput.addEventListener('change', () => {
+            const selectedDate = new Date(dataInput.value).toISOString().split('T')[0];
+            const currentDate = `${year}-${month}-${day}`;
+            console.log("Current date: " + currentDate);
+
+            // Compare only the year, month, and day
+         
+            console.log("Selected date string: " + selectedDate);
+            
+
+            if (selectedDate === currentDate) {
+                // The selected date is the current date, filter the time slots
+                const currentHour = today.getHours();
+                Array.from(horariosDisponiveis).forEach(option => {
+                    const hour = parseInt(option.value.split(':')[0], 10);
+                    if (hour > currentHour) {
+                        option.style.display = 'block'; // Make the option visible
+                    } else {
+                        option.style.display = 'none'; // Hide the option
+                    }
+                });
+
+            }
+            else {
+                Array.from(horariosDisponiveis.options).forEach(option => {
+                    option.style.display = 'block'; // Make the option visible
+                });
+            } 
+        
+        });
+            
+    });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity">
+<head>
+<title th:text="${usuario.id == null} ? #{cadastro.cliente.cadastrar.titulo} : #{cadastro.cliente.editar.titulo}"></title>
+
+<link rel="stylesheet" href="/css/cadastroCliente.css" type="text/css">
+
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"> </script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/5.0.6/jquery.inputmask.min.js"></script>
+</head>
+
+<body>
+    <section>
+        <h1 th:text="${usuario.id == null} ? #{cadastro.cliente.cadastrar.titulo} : #{cadastro.cliente.editar.titulo}"></h1>
+        
+        <div id="cadastro">
+            <form th:action="${usuario.id == null} ? @{/usuarios/salvar} : @{/usuarios/editar}" th:object="${usuario}"
+                method="POST">
+                <div>
+                    <div>
+                        <label for="username" th:text="#{cadastro.cliente.email}"></label>
+                        <input type="email" id="username" th:placeholder="#{cadastro.cliente.email}"
+                            autofocus="autofocus" th:field="*{username}" required />
+                        <div>
+                            <span th:errors="*{username}"></span>
+                        </div>
+                    </div>
+                    <div>
+                        <label for="password" th:text="#{cadastro.cliente.senha}"></label>
+                        <input type="text" id="password" th:placeholder="#{cadastro.cliente.senha}"
+                            autofocus="autofocus" th:field="*{password}" th:readonly="${usuario.id != null}" style="background-color: lightgray;" required />
+                        <div>
+                            <span th:errors="*{password}"></span>
+                        </div>
+                    </div>
+                    <div>
+                        <label for="CPF" th:text="#{cadastro.cliente.cpf}"></label>
+                        <input type="text" id="CPF" th:field="*{CPF}" autofocus="autofocus" placeholder="___.___.___-__"
+                        data-inputmask="'mask': '999.999.999-99', 'removeMaskOnSubmit': true" th:readonly="${usuario.id != null}" style="background-color: lightgray;" required />
+                        <div>
+                            <span th:errors="*{CPF}"></span>
+                        </div>
+                    </div>
+                    <div>
+                        <label for="nome" th:text="#{cadastro.cliente.nomeCliente}"></label>
+                        <input type="text" id="nome" th:field="*{nome}" th:placeholder="#{cadastro.cliente.nomeCliente}"
+                            autofocus="autofocus" required />
+                        <div>
+                            <span th:errors="*{nome}"></span>
+                        </div>
+                    </div>
+                    <div>
+                        <label for="telefone" th:text="#{cadastro.cliente.telefone}"></label>
+                        <input type="tel" id="telefone" th:field="*{telefone}" placeholder="(__) _____-____" autofocus="autofocus" required minlength="11" pattern="\(\d{2}\) \d{4,5}-\d{4}" data-inputmask="'mask': '(99) 99999-9999', 'removeMaskOnSubmit': true"/>
+                    </div>
+                    <label for="cliente-sexo-container" th:text="#{cadastro.cliente.sexo}"></label>
+                    <div id="cliente-sexo-container" style="display: inline-block;">
+                        <input th:if="${usuario.sexo == 'M'}" type="radio" name="sexo" id="sexoUsuario" value="M" th:text="#{cadastro.cliente.sexo.masculino}" checked required>
+                        <input th:unless="${usuario.sexo == 'M'}" type="radio" name="sexo" id="sexoUsuario" value="M" th:text="#{cadastro.cliente.sexo.masculino}" required>
+
+                        <input th:if="${usuario.sexo == 'F'}" type="radio" name="sexo" id="sexoUsuario" value="F" th:text="#{cadastro.cliente.sexo.feminino}" checked>
+                        <input th:unless="${usuario.sexo == 'F'}" type="radio" name="sexo" id="sexoUsuario" value="F" th:text="#{cadastro.cliente.sexo.feminino}">
+
+                    </div>
+
+                    <div>
+                        <label for="dataNascimento" th:text="#{cadastro.cliente.dataNascimento}"></label>
+                        <input type="date" id="dataNascimento" th:field="*{dataNascimento}" th:value="${#dates.format(dataNascimento, 'yyyy-MM-dd')}" autofocus="autofocus" required>
+                    </div>
+                    <div>
+                        <label for="role" th:text="#{cadastro.cliente.papel}"></label>
+                        <select id="role" th:field="*{role}" required>
+
+                            <option th:if="${usuario.role == 'ROLE_USER'}" value="ROLE_USER" checked>USER</option>
+                            <option th:unless="${usuario.role == 'ROLE_USER'}"value="ROLE_USER">USER</option>
+                            
+                            <option th:if="${usuario.role == 'ROLE_ADMIN'}" value="ROLE_ADMIN" checked>ADMIN</option>
+                            <option th:unless="${usuario.role == 'ROLE_ADMIN'}"value="ROLE_ADMIN">ADMIN</option>
+
+                        </select>
+                        <div>
+                            <span th:errors="*{role}"></span>
+                        </div>
+                    </div>
+                </div>
+                <input type="hidden" id="id" th:field="*{id}" />
+                <button type="submit" th:text="#{cadastro.cliente.salvar}"></button>
+            </form>
+        </div>
+        
+    </section>
+    <script>
+        $(document).ready(function () {
+            $("#CPF").inputmask("999.999.999-99", { "removeMaskOnSubmit": true });
+            $("#telefone").inputmask("(99) 99999-9999", { "removeMaskOnSubmit": true });
+        });
+
+        document.addEventListener("DOMContentLoaded", function() {
+            const today = new Date().toISOString().split('T')[0];
+            console.log("today: " + today);
+            let datNascimento = document.getElementById('dataNascimento');
+            datNascimento.max = today;
+        });
+    </script>
+</body>
+
+</html>

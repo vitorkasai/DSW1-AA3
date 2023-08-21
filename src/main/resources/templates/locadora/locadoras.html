@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+	
+	  xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity">
+<head>
+    <title th:text="#{index.message.5}"></title>
+	<link rel="stylesheet" href="/css/locadorasListagem.css"  type="text/css">
+	
+</head>
+<body>
+<div layout:fragment="content" th:remove="tag">
+	<label for="selectCidade" ></label>
+	<select name="selectCidadeListagem" id="selectCidade">
+		<option th:value="allCidades" th:text="#{cadastro.locadora.selecionarCidade}" selected id="allCidades"></option>
+	</select>
+    <div>
+        <table class="table table-striped table-hover table-sm">
+			<thead>
+				<tr>
+					<th th:text="#{locadora.crud.nome}"></th>
+					<th th:text="#{locadora.crud.cidade}"></th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:each="locadora : ${locadoras}" >
+					<td th:text="${locadora.nome}"></td>
+					<td th:text="${locadora.cidade}" class="cidadeCadaLocadora"></td>					
+				</tr>
+			</tbody>
+		</table>
+    </div>
+</div>
+<script>
+	console.log("Arquivo JavaScript carregado!");
+	document.addEventListener('DOMContentLoaded', function () {
+		console.log("Documento carregado!");
+		var cidadeSelect = document.getElementById('selectCidade');
+		var xhr = new XMLHttpRequest();
+		
+		xhr.open('GET', '/index/cidades', true); // Mapeie essa URL no seu controlador para retornar o conteúdo do arquivo de cidades
+		xhr.onreadystatechange = function() {
+			if (xhr.readyState === 4 && xhr.status === 200) {
+				var cidades = xhr.responseText.split('\n');
+				for (var i = 0; i < cidades.length; i++) {
+					var option = document.createElement('option');
+					option.text = cidades[i];
+					cidadeSelect.add(option);
+				}
+			}
+		};
+		xhr.send();
+
+		cidadeSelect.addEventListener('change', function() {
+			var cidadeSelecionada = cidadeSelect.value;
+			var locadoras = document.querySelectorAll('.cidadeCadaLocadora');
+			for (var i = 0; i < locadoras.length; i++) {
+				var locadora = locadoras[i];
+				console.log("Cidade selecionada: " + cidadeSelecionada);
+				console.log("Cidade locadora: " + locadora.innerHTML);
+				if (cidadeSelecionada === 'allCidades' || cidadeSelecionada === locadora.innerHTML) {
+					locadora.parentNode.style.display = 'table-row';
+				} else {
+					locadora.parentNode.style.display = 'none';
+				}
+			}
+		});
+	});
+</script>
+</body>
+</html>
