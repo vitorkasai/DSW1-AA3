@@ -14,11 +14,9 @@ public interface ILocadoraDAO extends CrudRepository<Locadora, Long> {
     List<Locadora> findAll();
     Locadora save(Locadora locadora);
     void deleteById(Long id);    
+    List<Locadora> findAllByCidade(String cidade);
 
     @Query("SELECT l FROM Locadora l WHERE l.username = :username")
     public Locadora getUserByUsername(@Param("username") String username);
-    /* 
-    @Query("select * from Locadora where cidade = :cidade")
-	public List<Locadora> buscarPorCidade(@Param("cidade") String cidade);*/
-
+    
 }

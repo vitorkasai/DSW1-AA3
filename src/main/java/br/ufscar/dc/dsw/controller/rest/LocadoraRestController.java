@@ -129,15 +129,15 @@ public class LocadoraRestController {
 			return ResponseEntity.noContent().build();
 		}
 	}
-    /* 
+    
 	@GetMapping(path = "/locadoras/cidades/{nome}")
 	public ResponseEntity<List<Locadora>> listaPorCidade(@PathVariable("nome") String cidade) {
 		
-		List<Locadora> locadoras = service.buscarPorCidade(cidade);
+		List<Locadora> locadoras = service.buscarTodosPorCidade(cidade);
 		
 		if (locadoras.isEmpty()) {
 			return ResponseEntity.notFound().build();
 		}
 		return ResponseEntity.ok(locadoras);
-	} */
+	} 
 }
