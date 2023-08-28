@@ -67,8 +67,6 @@ public class LocacaoRestController {
 		return ResponseEntity.ok(locacao);
 	}
 
-	
-    
     
 	@GetMapping(path = "/locacoes/clientes/{id}")
 	public ResponseEntity<List<Locacao>> listaPorCliente(@PathVariable("id") long id) {

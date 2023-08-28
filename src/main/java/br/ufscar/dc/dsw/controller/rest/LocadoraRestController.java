@@ -84,9 +84,16 @@ public class LocadoraRestController {
 			System.out.println("JSON: ");
 			System.out.println(json);
 			if (isJSONValid(json.toString())) {
+				String cnpj = (String) json.get("cnpj");
+				Locadora existingLocadora = service.buscarPorCNPJ(cnpj); // Adicione um método personalizado para buscar por CNPJ
+				
+				if (existingLocadora != null) {
+					// Se a locadora com o mesmo CNPJ já existe, retorne um erro ou uma resposta apropriada
+					return ResponseEntity.status(HttpStatus.CONFLICT).body(null); // Conflito de dados (CNPJ já existe)
+				}
+				
 				Locadora locadora = new Locadora();
 				parse(locadora, json);
-
 				service.salvar(locadora);
 				return ResponseEntity.ok(locadora);
 			} else {
@@ -106,6 +113,14 @@ public class LocadoraRestController {
 				if (locadora == null) {
 					return ResponseEntity.notFound().build();
 				} else {
+					String cnpj = (String) json.get("cnpj");
+					Locadora existingLocadora = service.buscarPorCNPJ(cnpj); // Adicione um método personalizado para buscar por CNPJ
+					
+					if (existingLocadora != null && !existingLocadora.getId().equals(locadora.getId())) {
+						// Se a locadora com o mesmo CNPJ já existe (diferente da locadora sendo atualizada), retorne um erro
+						return ResponseEntity.status(HttpStatus.CONFLICT).body(null); // Conflito de dados (CNPJ já existe)
+					}
+					
 					parse(locadora, json);
 					service.salvar(locadora);
 					return ResponseEntity.ok(locadora);
@@ -117,6 +132,7 @@ public class LocadoraRestController {
 			return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(null);
 		}
 	}
+
 
 	@DeleteMapping(path = "/locadoras/{id}")
 	public ResponseEntity<Boolean> remove(@PathVariable("id") long id) {

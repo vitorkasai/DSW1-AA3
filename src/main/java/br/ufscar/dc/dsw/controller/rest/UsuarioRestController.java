@@ -1,6 +1,7 @@
 package br.ufscar.dc.dsw.controller.rest;
 
 import java.io.IOException;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -48,6 +49,7 @@ public class UsuarioRestController {
 				usuario.setId((Long) id);
 			}
 		}
+
 		usuario.setCPF((String) json.get("cpf"));
 		usuario.setDataNascimento((String) json.get("dataNascimento"));
 		usuario.setNome((String) json.get("nome"));
@@ -84,6 +86,14 @@ public class UsuarioRestController {
 			System.out.println("JSON: ");
 			System.out.println(json);
 			if (isJSONValid(json.toString())) {
+				String cpf = (String) json.get("cpf");
+				Usuario existingUser = service.buscarPorCPF(cpf); // Adicione um método personalizado para buscar por CPF
+				
+				if (existingUser != null) {
+					// Se o usuário com o mesmo CPF já existe, retorne um erro ou uma resposta apropriada
+					return ResponseEntity.status(HttpStatus.CONFLICT).body(null); // Conflito de dados (CPF já existe)
+				}
+				
 				Usuario usuario = new Usuario();
 				parse(usuario, json);
 				service.salvar(usuario);
@@ -105,6 +115,14 @@ public class UsuarioRestController {
 				if (usuario == null) {
 					return ResponseEntity.notFound().build();
 				} else {
+					String cpf = (String) json.get("cpf");
+					Usuario existingUser = service.buscarPorCPF(cpf); // Adicione um método personalizado para buscar por CPF
+					
+					if (existingUser != null && !existingUser.getId().equals(usuario.getId())) {
+						// Se o usuário com o mesmo CPF já existe (diferente do usuário sendo atualizado), retorne um erro
+						return ResponseEntity.status(HttpStatus.CONFLICT).body(null); // Conflito de dados (CPF já existe)
+					}
+					
 					parse(usuario, json);
 					service.salvar(usuario);
 					return ResponseEntity.ok(usuario);
@@ -116,6 +134,7 @@ public class UsuarioRestController {
 			return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(null);
 		}
 	}
+
 
 	@DeleteMapping(path = "/clientes/{id}")
 	public ResponseEntity<Boolean> remove(@PathVariable("id") long id) {

@@ -101,7 +101,7 @@ public class Usuario{
 	}
 
 	public void setCPF(String CPF) {
-        // Remover pontos e traços do CNPJ
+        // Remover pontos e traços do CPF
         this.CPF = CPF != null ? CPF.replaceAll("[^0-9]", "") : null;
     }
 

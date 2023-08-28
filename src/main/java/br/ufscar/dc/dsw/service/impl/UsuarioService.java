@@ -29,6 +29,11 @@ public class UsuarioService implements IUsuarioService {
 	public Usuario buscarPorId(Long id) {
 		return dao.findById(id.longValue());
 	}
+
+	@Transactional(readOnly = true)
+	public Usuario buscarPorCPF(String CPF) {
+		return dao.findByCPF(CPF);
+	}
 	
 	@Transactional(readOnly = true)
 	public List<Usuario> buscarTodos() {
